@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Dev = require('../models/Dev');
 const commaSeparatedStringToArray = require('../utils/commaSeparatedStringToArray');
+const { findConnections, sendMessage } = require('../websocket');
 // index, show, store, update, destroy
 
 const _getFilters = ({ latitude, longitude, techs }) => {
@@ -53,6 +54,9 @@ const store = async (req, res) => {
         techs: techsArray,
         location
       });
+
+      const sendSocketMessageTo = findConnections({ latitude, longitude }, techsArray);
+      sendMessage(sendSocketMessageTo, 'new-dev', dev);
     } catch (error) {
       console.error(error.message);
     }
